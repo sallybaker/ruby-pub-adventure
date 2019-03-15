@@ -2,38 +2,38 @@
 ## Adapted by Sally Baker 
 ## A text adventure game 
 ## ==================================================================================
-## Start of functions 
+## Start of functions
 # Create a pub 
-def create_pub 
-	"You enter #{pub_name} #{pub_description}" 
+def pub_statement(current_pub, pub_description) 
+	"You're at #{current_pub} #{pub_description(current_pub)}" 
 end
 def pub_busy?
 	"The pub is #{crowd_numbers}."
 end
 # Create Pub helper methods 
-def pub_name 
+def pub_name
 	pub_name = ["The Regatta", "The Fox", "Lock'n'Load", "The Norman", "The Pineapple", "The Story Bridge Hotel", "The Breakfast Creek Hotel", "The Victory"].sample
 end 
 def crowd_numbers
 	["Quiet","Busy","Buzzing"].sample
 end
-def pub_description 
-	if pub_name == "The Regatta"
-		"and grab a spot on the balcony."
-	elsif pub_name == "The Fox"
-		"and head straight to the rooftop bar for city views."
-	elsif pub_name == "Lock'n'Load"
-		". Live music is playing and manage to grab a seat at the front bar."
-	elsif pub_name == "The Norman"
-		"and head straight for the beer garden."
-	elsif pub_name == "The Pineapple"
-		"and score a booth in the 5th Quarter bar."
-	elsif pub_name == "The Story Bridge Hotel"
-		"and pull up a chair in the Shelter Bar."
-	elsif pub_name == "The Breakfast Creek Hotel"
-		"and find a table in the beer garden."
-	elsif pub_name == "The Victory"
-		"and head straight to the front bar for Karoake."
+def pub_description(current_pub)
+	if current_pub == "The Regatta"
+		"on the balcony."
+	elsif current_pub == "The Fox"
+		"rooftop bar."
+	elsif current_pub == "Lock'n'Load"
+		". Live music is playing."
+	elsif current_pub == "The Norman"
+		"beer garden."
+	elsif current_pub == "The Pineapple"
+		"5th Quarter bar booth."
+	elsif current_pub == "The Story Bridge Hotel"
+		"Shelter Bar."
+	elsif current_pub == "The Breakfast Creek Hotel"
+		"beer garden."
+	elsif current_pub == "The Victory"
+		"Karoake bar."
 	else
 		". " 
 	end		
@@ -83,54 +83,69 @@ pubs_visited = 1
 treasure_count = 0 #change this to Wallet and count down spending? If no money go home?
 passed_out = false
 shots = false
-current_pub = create_pub
+current_pub = pub_name
 player_names = Array.new
+line = "=================================================="
+space = " "
+# End of starting variables
+# Start of narrative 
+puts line
+puts space
 puts "Tonight you are going on a pub crawl!"
 puts "Collect treasure and try not to pass out." 
 puts "To play, type one of the command choice on each turn."
+puts space
+puts line
+puts space
 # ToDo: prompt for drink preference 
 puts "How many friends are in?"
 players = gets.to_i
-# End of starting variables
-# Start of narrative 
-1.upto(players) do #|something|
-	puts "#{players} friends have agreed to accompany you on this night of adventure." 
-	puts "What are their names?"
-	puts "Enter name: "
+puts "#{players} friends have agreed to accompany you on this night of adventure." 
+puts space
+puts line
+puts space
+puts "What are their names?"
+1.upto(players) do |row|
+	puts "Enter name #{row}: "
 	#add string to the end of an array 
 	player_name = gets.chomp
 	player_names.push(player_name)
 end 
+puts space
+# TODO: wait for reponse (i.e. press enter) before continuing 
 puts "Okay, so we know who's here. Let's play!"
-puts " " 
-puts " "
 # End of starting narrative
 # Main game loop
 while players > 0 and not passed_out
 	actions = ["m - move", "s - search", "c - count friends", "q - quit", "d - drink a beer" ]
+	puts space
+	puts line 
+	puts space
+	puts pub_statement(current_pub, pub_description(current_pub)) 
+	puts pub_busy?
 	puts "Drinks consumed: #{drinks}"
 	puts "Pubs visited: #{pubs_visited}"
-	puts current_pub
-	puts pub_busy?
 	#conscious_check
 	if passed_out
 		break
 	end 
 	## Player Actions 
 	# List available actions for player
-    print "What do you do? (#{actions.join(', ')}): "
+    print "What do you do?" 
+    puts "(#{actions.join(', ')}): "
     # Player inputs selected action
     player_action = gets.chomp
     # Handle player actions 
     if player_action == "q"
     	break
     elsif player_action == "m"
-    	current_pub = create_pub
+    	current_pub = pub_name
     	pubs_visited += pubs_visited
     elsif player_action == "s"
     	if has_treasure?
         puts "You found #{treasure}!"
-        treasure_count += treasure_count
+		treasure_count = treasure_count + 1 
+        puts "Now you have #{treasure_count} treasures"
       else
         puts "You look, but don't find anything."
       end
@@ -142,7 +157,6 @@ while players > 0 and not passed_out
     			break
     		end
 	end
-	break
 end 
 if players == 0
 	puts "Congratulations! You outlasted your mates with your iron stomach and determination"
@@ -155,16 +169,11 @@ else
 	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} beers" #once drink preference is established fix this line
 	puts "Better luck next time" 
 end
-
 # End of narrative
 ## End of Main Game
-
-
 # Drink another beer 
 # leave the pub and go to another pub 
 # randomly decide on treasure 
 # randomly decide on shots 
 # randomly decide to call an uber 
 # if the player gets too drunk or everyone goes home - display end message 
-
-
