@@ -5,7 +5,7 @@
 ## Start of functions
 # Create a pub 
 def pub_statement(current_pub, pub_description, drinks_cost) 
-	"You're at #{current_pub} #{pub_description(current_pub)}. Drinks cost: #{drinks_cost}." 
+	"You're at #{current_pub} #{pub_description(current_pub)}. Drinks cost: $#{drinks_cost}." 
 end
 def pub_busy?
 	"The pub is #{crowd_numbers}."
@@ -19,26 +19,26 @@ def crowd_numbers
 end
 def pub_description(current_pub)
 	if current_pub == "The Regatta"
-		"on the balcony."
+		"on the balcony"
 	elsif current_pub == "The Fox"
-		"rooftop bar."
+		"rooftop bar"
 	elsif current_pub == "Lock'n'Load"
-		". Live music is playing."
+		". Live music is playing"
 	elsif current_pub == "The Norman"
-		"beer garden."
+		"beer garden"
 	elsif current_pub == "The Pineapple"
-		"5th Quarter bar booth."
+		"5th Quarter bar booth"
 	elsif current_pub == "The Story Bridge Hotel"
-		"Shelter Bar."
+		"Shelter Bar"
 	elsif current_pub == "The Breakfast Creek Hotel"
-		"beer garden."
+		"beer garden"
 	elsif current_pub == "The Victory"
-		"Karoake bar."
+		"Karoake bar"
 	else
 		". " 
 	end	
 end
-def drinks_cost?(drinks_cost)	
+def drinks_cost?(current_pub)	
 	if current_pub == "The Regatta"
 		drinks_cost = 16
 	elsif current_pub == "The Fox"
@@ -85,7 +85,7 @@ def friends_piked?
 end
 # Check for treasure 
 def has_treasure?
-	if roll_dice(2,6) >= 4 #TODO: chnage to has_treasure_chance when adding difficulty modes
+	if roll_dice(2,6) >= 4 #TODO: change to has_treasure_chance when adding difficulty modes
     	true
   	else
     	false
@@ -95,10 +95,18 @@ end
 def treasure 
 	["Rolex watch", "$50", "an old sock", "a beer coaster"].sample
 end 
+# check for shots 
+def shots? 
+	if roll_dice(2,6) >= 6
+		true
+	else
+		false
+	end
+end
 ## End of functions 
 ## Start of Main Game 
 # Starting variables
-players = rand(6)
+players = rand(5) + 1
 drinks = 0
 max_drinks = 15
 drinks_cost = 10
@@ -118,7 +126,9 @@ puts space
 puts "Tonight you are going on a pub crawl!"
 puts "Collect treasure and try not to pass out." 
 puts "To play, type one of the command choice on each turn."
-# ToDo: prompt for drink preference 
+puts "Type 'help' to view full list of available actions"
+puts "What's Your Poison?"
+drink = gets.chomp 
 puts "#{players} friends have agreed to accompany you on this night of adventure." 
 puts "What are their names?"
 1.upto(players) do |row|
@@ -127,50 +137,53 @@ puts "What are their names?"
 	player_name = gets.chomp
 	player_names.push(player_name)
 end 
-puts space
-# TODO: wait for reponse (i.e. press enter) before continuing 
 puts "Okay, now that's out of the way. Let's play!"
+puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
+puts pub_busy?
 # End of starting narrative
 # Main game loop
 while players > 0 and not passed_out
-	actions = ["m - move", "s - search", "c - count friends", "q - quit", "d - drink" ]
-	puts space
-	puts line 
-	puts space
-	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
-	puts pub_busy?
-	puts "Drinks consumed: #{drinks}"
-	puts "Pubs visited: #{pubs_visited}"
-	puts "Wallet: #{wallet}"
-	puts "Treasure count: #{treasure_count}"
-	#conscious_check
+	actions = ["l - look","m - move", "s - search", "c - count friends", "d - drink", "stats - check stats", "help", "q - quit"]
+	#TODO: conscious_check
 	if passed_out
 		break
 	end 
+	#shots check 
+	if shots? 
+		puts "Someone orders a round of shots!"
+		puts "You drink"
+		drinks = drinks + 1
+	end
 	## Player Actions 
 	# List available actions for player
-    print "What do you do?" 
-    puts "(#{actions.join(', ')}): "
+	print space
+    print "What do you do?"
     # Player inputs selected action
     player_action = gets.chomp
     # Handle player actions 
     if player_action == "q"
     	break
+    elsif player_action == "l"
+    	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
+		puts pub_busy?
     elsif player_action == "m"
     	current_pub = pub_name
+    	drinks_cost = drinks_cost?(current_pub)
     	pubs_visited = pubs_visited + 1
+    	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
+		puts pub_busy?
     elsif player_action == "s"
     	if has_treasure?
-        puts "You found #{treasure}!"
-		treasure_count = treasure_count + 1 
-        puts "Now you have #{treasure_count} treasures"
-      else
-        puts "You look, but don't find anything."
-      end
+        	puts "You found #{treasure}!"
+			treasure_count = treasure_count + 1 
+        	puts "Now you have #{treasure_count} treasures"
+      	else
+        	puts "You look, but don't find anything."
+      	end
     elsif player_action == "c"
     elsif player_action == "d"
     	if wallet > drinks_cost
-    		puts "You drink another beer" #ToDo: change to a condiitonal for type of drink
+    		puts "You drink another #{drink}"
     		drinks = drinks + 1
     		wallet = wallet - drinks_cost
     		if passed_out
@@ -179,7 +192,15 @@ while players > 0 and not passed_out
     	else wallet <= drinks_cost
     		puts "You don't have enough money."
     	end
-
+    elsif player_action == "stats"
+		puts "Drinks consumed: #{drinks}"
+		puts "Pubs visited: #{pubs_visited}"
+		puts "Wallet: #{wallet}"
+		puts "Treasure count: #{treasure_count}" 
+	elsif player_action == "help"
+		puts actions
+	else 
+		puts "That doesn't work. Try again." #TODO: add function to call random responses from an array of strings
 	end
 end 
 if players == 0
@@ -188,10 +209,12 @@ if players == 0
 	puts "and collected #{treasure_count} treasures"
 elsif player_action == "q"
 	"Thank you. Come again."
-else
+elsif
 	puts "Oh No! You passed out!"
-	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} beers" #once drink preference is established fix this line
+	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} #{drink}."
 	puts "Better luck next time" 
+else
+	puts "The End"
 end
 # End of narrative
 ## End of Main Game
@@ -201,3 +224,7 @@ end
 # randomly decide to call an uber 
 # if the player gets too drunk or everyone goes home - display end message 
 # randomly decide on happy hour and cheap drinks 
+# add treasure to an inventory 
+# add mooney to wallet 
+# add max_shots and when reached game over as player passes out 
+
