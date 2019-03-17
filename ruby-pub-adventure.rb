@@ -4,8 +4,8 @@
 ## ==================================================================================
 ## Start of functions
 # Create a pub 
-def pub_statement(current_pub, pub_description) 
-	"You're at #{current_pub} #{pub_description(current_pub)}" 
+def pub_statement(current_pub, pub_description, drinks_cost) 
+	"You're at #{current_pub} #{pub_description(current_pub)}. Drinks cost: #{drinks_cost}." 
 end
 def pub_busy?
 	"The pub is #{crowd_numbers}."
@@ -36,6 +36,27 @@ def pub_description(current_pub)
 		"Karoake bar."
 	else
 		". " 
+	end	
+end
+def drinks_cost?(drinks_cost)	
+	if current_pub == "The Regatta"
+		drinks_cost = 16
+	elsif current_pub == "The Fox"
+		drinks_cost = 8
+	elsif current_pub == "Lock'n'Load"
+		drinks_cost = 12
+	elsif current_pub == "The Norman"
+		drinks_cost = 10
+	elsif current_pub == "The Pineapple"
+		drinks_cost = 14
+	elsif current_pub == "The Story Bridge Hotel"
+		drinks_cost = 12
+	elsif current_pub == "The Breakfast Creek Hotel"
+		drinks_cost = 12
+	elsif current_pub == "The Victory"
+		drinks_cost = 6
+	else
+		drinks_cost = 10 
 	end		
 end 
 # Roll the dice method 
@@ -72,15 +93,18 @@ def has_treasure?
 end
 # Determine what treasure is found 
 def treasure 
-	["Rolex watch", "$50", "An old sock", "A new beer coaster to add to the collection"].sample
+	["Rolex watch", "$50", "an old sock", "a beer coaster"].sample
 end 
 ## End of functions 
 ## Start of Main Game 
 # Starting variables
+players = rand(6)
 drinks = 0
 max_drinks = 15
+drinks_cost = 10
 pubs_visited = 1
-treasure_count = 0 #change this to Wallet and count down spending? If no money go home?
+wallet = 150
+treasure_count = 0 
 passed_out = false
 shots = false
 current_pub = pub_name
@@ -94,16 +118,8 @@ puts space
 puts "Tonight you are going on a pub crawl!"
 puts "Collect treasure and try not to pass out." 
 puts "To play, type one of the command choice on each turn."
-puts space
-puts line
-puts space
 # ToDo: prompt for drink preference 
-puts "How many friends are in?"
-players = gets.to_i
 puts "#{players} friends have agreed to accompany you on this night of adventure." 
-puts space
-puts line
-puts space
 puts "What are their names?"
 1.upto(players) do |row|
 	puts "Enter name #{row}: "
@@ -113,18 +129,20 @@ puts "What are their names?"
 end 
 puts space
 # TODO: wait for reponse (i.e. press enter) before continuing 
-puts "Okay, so we know who's here. Let's play!"
+puts "Okay, now that's out of the way. Let's play!"
 # End of starting narrative
 # Main game loop
 while players > 0 and not passed_out
-	actions = ["m - move", "s - search", "c - count friends", "q - quit", "d - drink a beer" ]
+	actions = ["m - move", "s - search", "c - count friends", "q - quit", "d - drink" ]
 	puts space
 	puts line 
 	puts space
-	puts pub_statement(current_pub, pub_description(current_pub)) 
+	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
 	puts pub_busy?
 	puts "Drinks consumed: #{drinks}"
 	puts "Pubs visited: #{pubs_visited}"
+	puts "Wallet: #{wallet}"
+	puts "Treasure count: #{treasure_count}"
 	#conscious_check
 	if passed_out
 		break
@@ -140,7 +158,7 @@ while players > 0 and not passed_out
     	break
     elsif player_action == "m"
     	current_pub = pub_name
-    	pubs_visited += pubs_visited
+    	pubs_visited = pubs_visited + 1
     elsif player_action == "s"
     	if has_treasure?
         puts "You found #{treasure}!"
@@ -151,11 +169,17 @@ while players > 0 and not passed_out
       end
     elsif player_action == "c"
     elsif player_action == "d"
-    		puts "You drink another beer" #ToDo: maybe add a condiitonal - of beer count not sure after x beers
-    		drinks += drinks
+    	if wallet > drinks_cost
+    		puts "You drink another beer" #ToDo: change to a condiitonal for type of drink
+    		drinks = drinks + 1
+    		wallet = wallet - drinks_cost
     		if passed_out
     			break
     		end
+    	else wallet <= drinks_cost
+    		puts "You don't have enough money."
+    	end
+
 	end
 end 
 if players == 0
@@ -171,9 +195,9 @@ else
 end
 # End of narrative
 ## End of Main Game
-# Drink another beer 
-# leave the pub and go to another pub 
-# randomly decide on treasure 
+#TODO:  
+# drinking limits - per hour? per pub? max?
 # randomly decide on shots 
 # randomly decide to call an uber 
 # if the player gets too drunk or everyone goes home - display end message 
+# randomly decide on happy hour and cheap drinks 
