@@ -4,11 +4,9 @@
 ## ==================================================================================
 ## Start of functions
 # Create a pub 
-def pub_statement(current_pub, pub_description, drinks_cost) 
-	"You're at #{current_pub} #{pub_description(current_pub)}. Drinks cost: $#{drinks_cost}." 
-end
-def pub_busy?
-	"The pub is #{crowd_numbers}."
+def pub_statement(current_pub, pub_description, drinks_cost, wallet, drink) 
+	puts "You're at #{current_pub} #{pub_description(current_pub)}." 
+	puts "#{drink} costs: $#{drinks_cost}. You have $#{wallet}" 
 end
 # Create Pub helper methods 
 def pub_name
@@ -68,16 +66,8 @@ def roll_dice(number_of_dice, size_of_dice)
   return total
 end
 # check to see if player is still concious
-def passed_out
-	if roll_dice(2,6) >= concious_chance
-		true
-	else
-		false
-	end
-end
-# Check to see if everyone is still here 
-def friends_piked?
-	if roll_dice(2,6) >= friends_piked_chance
+def passed_out?
+	if roll_dice(2,6) >= 12
 		true
 	else
 		false
@@ -85,22 +75,28 @@ def friends_piked?
 end
 # Check for treasure 
 def has_treasure?
-	if roll_dice(2,6) >= 4 #TODO: change to has_treasure_chance when adding difficulty modes
+	if roll_dice(2,6) >= 4
     	true
   	else
     	false
   	end
 end
 # Determine what treasure is found 
-def treasure 
+def new_treasure 
 	["Rolex watch", "$50", "an old sock", "a beer coaster"].sample
 end 
 # check for shots 
 def shots? 
-	if roll_dice(2,6) >= 6
+	if roll_dice(2,6) >= 8
 		true
 	else
 		false
+	end
+end
+def water?(drink)
+	while drink == "water"
+	puts "No really, what alcholic drink do you prefer?"
+	drink = gets.chomp
 	end
 end
 ## End of functions 
@@ -113,46 +109,42 @@ drinks_cost = 10
 pubs_visited = 1
 wallet = 150
 treasure_count = 0 
-passed_out = false
 shots = false
 current_pub = pub_name
 player_names = Array.new
+actions = ["l - look","m - move", "s - search", "d - drink", "stats - check stats", "help - lists available actions", "q - quit"]
 line = "=================================================="
 space = " "
 # End of starting variables
 # Start of narrative 
 puts line
 puts space
-puts "Tonight you are going on a pub crawl!"
-puts "Collect treasure and try not to pass out." 
-puts "To play, type one of the command choice on each turn."
-puts "Type 'help' to view full list of available actions"
-puts "What's Your Poison?"
-drink = gets.chomp 
+puts "Tonight you are going on a pub crawl! Try not to pass out."  
 puts "#{players} friends have agreed to accompany you on this night of adventure." 
-puts "What are their names?"
-1.upto(players) do |row|
-	puts "Enter name #{row}: "
-	#add string to the end of an array 
-	player_name = gets.chomp
-	player_names.push(player_name)
-end 
-puts "Okay, now that's out of the way. Let's play!"
-puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
-puts pub_busy?
+puts "To play, type one of the command choices on each turn:"
+puts actions
+puts "But before we begin, what do you prefer to drink? (Beer, Wine, Hard Liquor)"
+drink = gets.chomp 
+#TODO: easter egg if water 
+if drink == "water"
+	water?(drink)
+end
+pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
 # End of starting narrative
 # Main game loop
-while players > 0 and not passed_out
-	actions = ["l - look","m - move", "s - search", "c - count friends", "d - drink", "stats - check stats", "help", "q - quit"]
-	#TODO: conscious_check
-	if passed_out
+while players > 0
+	# Conscious_check
+	if passed_out?
 		break
 	end 
-	#shots check 
+	# Shots check 
 	if shots? 
 		puts "Someone orders a round of shots!"
 		puts "You drink"
 		drinks = drinks + 1
+		if passed_out?
+			break
+		end 
 	end
 	## Player Actions 
 	# List available actions for player
@@ -164,29 +156,33 @@ while players > 0 and not passed_out
     if player_action == "q"
     	break
     elsif player_action == "l"
-    	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
-		puts pub_busy?
+    	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
     elsif player_action == "m"
     	current_pub = pub_name
     	drinks_cost = drinks_cost?(current_pub)
     	pubs_visited = pubs_visited + 1
-    	puts pub_statement(current_pub, pub_description(current_pub), drinks_cost) 
-		puts pub_busy?
+    	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
     elsif player_action == "s"
     	if has_treasure?
-        	puts "You found #{treasure}!"
-			treasure_count = treasure_count + 1 
-        	puts "Now you have #{treasure_count} treasures"
+    		treasure = new_treasure
+    		if treasure == "$50"
+    			wallet += 50
+    			puts "You found #{treasure}!"
+    			puts "You now have $#{wallet} in your wallet"
+    		else
+    			puts "You found #{treasure}!"
+				treasure_count = treasure_count + 1 
+        		puts "Now you have #{treasure_count} treasures"
+    		end	
       	else
         	puts "You look, but don't find anything."
       	end
-    elsif player_action == "c"
     elsif player_action == "d"
     	if wallet > drinks_cost
     		puts "You drink another #{drink}"
     		drinks = drinks + 1
     		wallet = wallet - drinks_cost
-    		if passed_out
+    		if passed_out?
     			break
     		end
     	else wallet <= drinks_cost
@@ -220,11 +216,10 @@ end
 ## End of Main Game
 #TODO:  
 # drinking limits - per hour? per pub? max?
-# randomly decide on shots 
 # randomly decide to call an uber 
 # if the player gets too drunk or everyone goes home - display end message 
 # randomly decide on happy hour and cheap drinks 
 # add treasure to an inventory 
-# add mooney to wallet 
 # add max_shots and when reached game over as player passes out 
+# order shots
 
