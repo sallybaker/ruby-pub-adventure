@@ -87,7 +87,7 @@ def new_treasure
 end 
 # check for shots 
 def shots? 
-	if roll_dice(2,6) >= 8
+	if roll_dice(2,6) >= 10
 		true
 	else
 		false
@@ -98,6 +98,24 @@ def water?(drink)
 	puts "No really, what alcholic drink do you prefer?"
 	drink = gets.chomp
 	end
+end
+def maxed_out?(drinks, max_drinks)  
+	if drinks >= max_drinks
+		true
+	else 
+		false
+	end
+end
+def goes_home?(players)
+	if roll_dice(2,6) >= 2
+		true
+	else
+		false	
+	end
+end
+def one_less(players)
+	players = players - 1
+	puts "Someone went home. #{players} mates are still going."
 end
 ## End of functions 
 ## Start of Main Game 
@@ -110,9 +128,10 @@ pubs_visited = 1
 wallet = 150
 treasure_count = 0 
 shots = false
+shots_cost = drinks_cost * players
 current_pub = pub_name
 player_names = Array.new
-actions = ["l - look","m - move", "s - search", "d - drink", "stats - check stats", "help - lists available actions", "q - quit"]
+actions = ["l - look","m - move", "s - search", "d - drink", "shots - buy round of shots", "stats - check stats", "help - lists available actions", "q - quit"]
 line = "=================================================="
 space = " "
 # End of starting variables
@@ -144,12 +163,15 @@ while players > 0
 		drinks = drinks + 1
 		if passed_out?
 			break
-		end 
+		end
+	end
+	if maxed_out?(drinks, max_drinks)
+		break
 	end
 	## Player Actions 
 	# List available actions for player
 	print space
-    print "What do you do?"
+    print " > What do you do?"
     # Player inputs selected action
     player_action = gets.chomp
     # Handle player actions 
@@ -157,11 +179,18 @@ while players > 0
     	break
     elsif player_action == "l"
     	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
+    	# Players_check 
+    	goes_home?(players)
+		if goes_home?(players) 
+			one_less(players)
+		end
     elsif player_action == "m"
     	current_pub = pub_name
     	drinks_cost = drinks_cost?(current_pub)
     	pubs_visited = pubs_visited + 1
     	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
+    	# Players_check 
+		goes_home?(players)
     elsif player_action == "s"
     	if has_treasure?
     		treasure = new_treasure
@@ -177,26 +206,60 @@ while players > 0
       	else
         	puts "You look, but don't find anything."
       	end
+      	# Players_check 
+		goes_home?(players)
     elsif player_action == "d"
-    	if wallet > drinks_cost
+    	if wallet >= drinks_cost 
     		puts "You drink another #{drink}"
     		drinks = drinks + 1
     		wallet = wallet - drinks_cost
     		if passed_out?
     			break
     		end
-    	else wallet <= drinks_cost
+    		if maxed_out?(drinks, max_drinks)
+    			break
+    		end
+    	else
     		puts "You don't have enough money."
     	end
+    	# Players_check 
+		goes_home?(players)
+    elsif player_action == "shots"
+    	puts "A round of shots costs $#{shots_cost}"
+    	if wallet < shots_cost
+    		puts "You don't have enough money"
+    	else
+    		puts "Are you sure (Y/N)?"
+    		check = gets.chomp
+    		if check == "y"
+    			puts "You buy a round of shots!"
+    			drinks += 1
+    			wallet = wallet - shots_cost
+    			if passed_out?
+    				break
+    			end
+    			if maxed_out?(drinks, max_drinks)
+    				break
+    			end
+    		end
+    	end
+    	# Players_check 
+		goes_home?(players)
     elsif player_action == "stats"
 		puts "Drinks consumed: #{drinks}"
 		puts "Pubs visited: #{pubs_visited}"
 		puts "Wallet: #{wallet}"
 		puts "Treasure count: #{treasure_count}" 
+		# Players_check 
+		goes_home?(players)
 	elsif player_action == "help"
 		puts actions
+		# Players_check 
+		goes_home?(players)
 	else 
 		puts "That doesn't work. Try again." #TODO: add function to call random responses from an array of strings
+		# Players_check 
+		goes_home?(players)
 	end
 end 
 if players == 0
@@ -208,18 +271,16 @@ elsif player_action == "q"
 elsif
 	puts "Oh No! You passed out!"
 	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} #{drink}."
-	puts "Better luck next time" 
+	puts "Better drink more responsibly next time" 
 else
 	puts "The End"
 end
 # End of narrative
 ## End of Main Game
 #TODO:  
-# drinking limits - per hour? per pub? max?
 # randomly decide to call an uber 
 # if the player gets too drunk or everyone goes home - display end message 
 # randomly decide on happy hour and cheap drinks 
 # add treasure to an inventory 
-# add max_shots and when reached game over as player passes out 
-# order shots
+
 
