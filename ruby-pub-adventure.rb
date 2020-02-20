@@ -108,14 +108,10 @@ def maxed_out?(drinks, max_drinks)
 	end
 end
 def goes_home?(players)
-	if roll_dice(2,6) >= 0
-		puts "Goes home true"
-		puts players 
-		one_less = players - 1
-		# puts "Someone went home. #{players} mates are still going."
-		puts one_less
+	if roll_dice(2,6) >= 6
+		true 
 	else	
-		puts "Goes home false"
+		false
 	end
 end
 ## End of functions 
@@ -251,7 +247,9 @@ while players > 0
 	else 
 		puts "That doesn't work. Try again."
 	end
-	goes_home?(players)
+	if goes_home?(players) == true 
+		players -= 1
+	end
 	puts "Players: #{players}"
 
 end 
