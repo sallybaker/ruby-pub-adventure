@@ -250,8 +250,6 @@ while players > 0
 	if goes_home?(players) == true 
 		players -= 1
 	end
-	puts "Players: #{players}"
-
 end 
 if players == 0
 	puts "Congratulations! You outlasted your mates with your iron stomach and determination"
