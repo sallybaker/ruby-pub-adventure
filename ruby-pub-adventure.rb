@@ -117,7 +117,7 @@ end
 ## End of functions 
 ## Start of Main Game 
 # Starting variables
-players = rand(5) + 1
+players = rand(10) + 1
 drinks = 0
 max_drinks = 15
 drinks_cost = 10
@@ -135,19 +135,22 @@ actions = [
 	"     d - drink", 
 	"     shots - buy round of shots", 
 	"     stats - check stats", 
-	"     help - lists available actions", 
 	"     q - quit"
 ]
-line = "=================================================="
-space = " "
+line0 = "      ======================================"
+line1 = "      *                                    *"
+line2 = "      *          Ruby Pub Adventure        *"
+line3 = "      *                                    *"
+line4 = "      ======================================"
 # End of starting variables
 # Start of narrative 
-puts line
-puts space
-puts "Tonight you are going on a pub crawl! Try not to pass out."  
+puts line0
+puts line1
+puts line2
+puts line3
+puts line4
+puts "\nTonight you are going on a pub crawl! Try not to pass out.\n\n"  
 puts "#{players} friends have agreed to accompany you on this night of adventure." 
-puts "To play, type one of the command choices on each turn:"
-puts actions
 puts "But before we begin, what do you prefer to drink? (Beer, Wine, Hard Liquor, Water)"
 drink = gets.chomp 
 while drink == "water"
@@ -165,7 +168,7 @@ while players > 0
 	if shots? 
 		puts "Someone orders a round of shots!"
 		puts "You drink"
-		drinks = drinks + 1
+		drinks += drinks
 		if passed_out?
 			break
 		end
@@ -175,21 +178,20 @@ while players > 0
 	end
 	## Player Actions 
 	# List available actions for player
-	print space
-    print " > What do you do?"
+    print "> What do you do?\n"
     # Player inputs selected action
     player_action = gets.chomp
     # Handle player actions 
-    if player_action == "q"
+    if player_action == "q" || player_action == "quit"
     	break
-    elsif player_action == "l"
+    elsif player_action == "l" || player_action == "look"
     	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
-    elsif player_action == "m"
+    elsif player_action == "m" || player_action == "move"
     	current_pub = pub_name
     	drinks_cost = drinks_cost?(current_pub)
     	pubs_visited = pubs_visited + 1
     	pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
-    elsif player_action == "s"
+    elsif player_action == "s" || player_action == "search"
     	if has_treasure?
     		treasure = new_treasure
     		if treasure == "$50"
@@ -204,7 +206,7 @@ while players > 0
       	else
         	puts "You look, but don't find anything."
       	end
-    elsif player_action == "d"
+    elsif player_action == "d" || player_action == "drink" 
     	if wallet >= drinks_cost 
     		puts "You drink another #{drink}"
     		drinks = drinks + 1
@@ -238,10 +240,10 @@ while players > 0
     		end
     	end
     elsif player_action == "stats"
-		puts "Drinks consumed: #{drinks}"
-		puts "Pubs visited: #{pubs_visited}"
-		puts "Wallet: #{wallet}"
-		puts "Treasure count: #{treasure_count}" 
+		puts "     Drinks consumed: #{drinks}"
+		puts "     Pubs visited: #{pubs_visited}"
+		puts "     Wallet: #{wallet}"
+		puts "     Treasure count: #{treasure_count}" 
 	elsif player_action == "help"
 		puts actions
 	else 
@@ -252,10 +254,10 @@ while players > 0
 	end
 end 
 if players == 0
-	puts "Congratulations! You outlasted your mates with your iron stomach and determination"
+	puts "\n*** Congratulations! ***\nYou outlasted your mates with your iron stomach and determination"
 	puts "You visited #{pubs_visited} pubs"
 	puts "and collected #{treasure_count} treasures"
-elsif player_action == "q"
+elsif player_action == "q" || player_action == "quit" || player_action == "exit"
 	"Thank you. Come again."
 elsif
 	puts "Oh No! You passed out!"
