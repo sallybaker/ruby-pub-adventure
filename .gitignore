@@ -1,0 +1,5 @@
+# ignore script snippets 
+junk.rb
+
+# ignore all text files 
+*.txt
