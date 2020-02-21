@@ -5,7 +5,7 @@
 ## Start of functions
 # Create a pub 
 def pub_statement(current_pub, pub_description, drinks_cost, wallet, drink) 
-	puts "You're at #{current_pub} #{pub_description(current_pub)}." 
+	puts "\nYou're at #{current_pub} #{pub_description(current_pub)}." 
 	puts "#{drink} costs: $#{drinks_cost}. You have $#{wallet}" 
 end
 # Create Pub helper methods 
@@ -151,10 +151,19 @@ puts line3
 puts line4
 puts "\nTonight you are going on a pub crawl! Try not to pass out.\n\n"  
 puts "#{players} friends have agreed to accompany you on this night of adventure." 
-puts "But before we begin, what do you prefer to drink? (Beer, Wine, Hard Liquor, Water)"
+puts "But before we begin, what do you prefer to drink?\n(Beer, Wine, Hard Liquor, Water)"
 drink = gets.chomp 
 while drink == "water"
 	drink = water?(drink)
+end
+if drink == "beer" || drink == "wine" || drink == "hard liquor"
+	puts "\n*** Good choice ***"
+else
+	puts "That's not on the menu tonight!"
+	puts "What will you be drinking instead?"
+	drink = gets.chomp
+	puts drink
+	return drink
 end
 pub_statement(current_pub, pub_description(current_pub), drinks_cost, wallet, drink) 
 # End of starting narrative
@@ -166,8 +175,8 @@ while players > 0
 	end 
 	# Shots check 
 	if shots? 
-		puts "Someone orders a round of shots!"
-		puts "You drink"
+		puts "\nSomeone orders a round of shots!"
+		puts "You drink\n\n"
 		drinks += drinks
 		if passed_out?
 			break
@@ -196,19 +205,19 @@ while players > 0
     		treasure = new_treasure
     		if treasure == "$50"
     			wallet += 50
-    			puts "You found #{treasure}!"
+    			puts "\nYou found #{treasure}!"
     			puts "You now have $#{wallet} in your wallet"
     		else
-    			puts "You found #{treasure}!"
+    			puts "\nYou found #{treasure}!"
 				treasure_count = treasure_count + 1 
         		puts "Now you have #{treasure_count} treasures"
     		end	
       	else
-        	puts "You look, but don't find anything."
+        	puts "\nYou look, but don't find anything."
       	end
     elsif player_action == "d" || player_action == "drink" 
     	if wallet >= drinks_cost 
-    		puts "You drink another #{drink}"
+    		puts "\nYou drink another #{drink}"
     		drinks = drinks + 1
     		wallet = wallet - drinks_cost
     		if passed_out?
@@ -218,7 +227,7 @@ while players > 0
     			break
     		end
     	else
-    		puts "You don't have enough money."
+    		puts "\nYou don't have enough money."
     	end
     elsif player_action == "shots"
     	puts "A round of shots costs $#{shots_cost}"
@@ -228,7 +237,7 @@ while players > 0
     		puts "Are you sure (Y/N)?"
     		check = gets.chomp
     		if check == "y"
-    			puts "You buy a round of shots!"
+    			puts "\nYou buy a round of shots!"
     			drinks += 1
     			wallet = wallet - shots_cost
     			if passed_out?
@@ -240,23 +249,24 @@ while players > 0
     		end
     	end
     elsif player_action == "stats"
+    	puts "Statistics:"
 		puts "     Drinks consumed: #{drinks}"
 		puts "     Pubs visited: #{pubs_visited}"
 		puts "     Wallet: #{wallet}"
 		puts "     Treasure count: #{treasure_count}" 
 	elsif player_action == "help"
+		puts "Usage:"
 		puts actions
 	else 
-		puts "That doesn't work. Try again."
+		puts "\nThat doesn't work. Try again."
 	end
 	if goes_home?(players) == true 
 		players -= 1
 	end
 end 
 if players == 0
-	puts "\n*** Congratulations! ***\nYou outlasted your mates with your iron stomach and determination"
-	puts "You visited #{pubs_visited} pubs"
-	puts "and collected #{treasure_count} treasures"
+	puts "\n*** Congratulations! ***\n\nYou outlasted your mates with your iron stomach and determination"
+	puts "You visited #{pubs_visited} pubs and gained #{treasure_count} treasures"
 elsif player_action == "q" || player_action == "quit" || player_action == "exit"
 	"Thank you. Come again."
 elsif
@@ -264,7 +274,7 @@ elsif
 	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} #{drink}."
 	puts "Better drink more responsibly next time" 
 else
-	puts "The End"
+	puts "\n*** The End ***\n"
 end
 # End of narrative
 ## End of Main Game
