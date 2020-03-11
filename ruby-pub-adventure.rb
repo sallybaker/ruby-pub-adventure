@@ -267,19 +267,22 @@ end
 if players == 0
 	puts "\n*** Congratulations! ***\n\nYou outlasted your mates with your iron stomach and determination"
 	puts "You visited #{pubs_visited} pubs and gained #{treasure_count} treasures"
+	puts "\n*** The End! ***\n\n"
 elsif player_action == "q" || player_action == "quit" || player_action == "exit"
-	"Thank you. Come again."
+	puts "Thank you. Come again."
+	puts "\n*** The End! ***\n\n"
 elsif
 	puts "Oh No! You passed out!"
 	puts "You could only handle #{pubs_visited} pubs and drank #{drinks} #{drink}."
 	puts "Better drink more responsibly next time" 
+	puts "\n*** The End! ***\n\n"
 else
-	puts "\n*** The End ***\n"
+	puts "\n*** The End ***\n\n"
 end
 # End of narrative
 ## End of Main Game
 #TODO:  
-# randomly decide to call an uber 
+# randomly decide to call an uber, or check that there is enough money in wallet for 1 drink at current pub  
 # if the player gets too drunk or everyone goes home - display end message 
 # randomly decide on happy hour and cheap drinks 
 # add treasure to an inventory 
